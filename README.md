@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Prompt Manager
 
-## Getting Started
+Gerenciador de prompts com interface moderna e tema escuro. Projeto de estudo desenvolvido durante a formação da Rocketseat.
 
-First, run the development server:
+## Tecnologias
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **[Next.js 16](https://nextjs.org/)** — framework React com App Router
+- **[React 19](https://react.dev/)** — com Server e Client Components
+- **[TypeScript 5](https://www.typescriptlang.org/)** — tipagem estática
+- **[Tailwind CSS 4](https://tailwindcss.com/)** — estilização utility-first
+- **[Prisma 6](https://www.prisma.io/)** — ORM para acesso ao banco de dados
+- **[PostgreSQL 17](https://www.postgresql.org/)** — banco de dados relacional
+- **[Radix UI](https://www.radix-ui.com/)** — primitivos de UI acessíveis
+- **[Lucide React](https://lucide.dev/)** — ícones
+- **[Jest](https://jestjs.io/) + [Testing Library](https://testing-library.com/)** — testes de componentes
+
+## Funcionalidades
+
+- Listagem de prompts na sidebar
+- Busca de prompts por título
+- Sidebar colapsável (expandir/minimizar)
+- Navegação para criar novo prompt
+- Tema escuro com variáveis CSS customizadas
+
+## Estrutura do projeto
+
+```
+src/
+├── app/
+│   ├── layout.tsx        # Layout raiz com sidebar
+│   └── page.tsx          # Página inicial
+├── components/
+│   ├── logo/             # Componente de logo
+│   ├── sidebar/          # Sidebar com lista de prompts
+│   └── ui/               # Componentes base (Button, Input)
+├── lib/
+│   ├── prisma.ts         # Singleton do Prisma Client
+│   ├── utils.ts          # Utilitário cn() para classes
+│   └── test-utils.tsx    # Utilitários para testes
+├── styles/
+│   └── globals.css       # CSS global e variáveis de tema
+└── tests/
+    └── components/       # Testes de componentes
+prisma/
+├── schema.prisma         # Modelo de dados (Prompt)
+└── migrations/           # Histórico de migrações
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Modelo de dados
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```prisma
+model Prompt {
+  id        String   @id @default(cuid())
+  title     String   @unique
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Pré-requisitos
 
-## Learn More
+- [Node.js](https://nodejs.org/) 20+
+- [pnpm](https://pnpm.io/) 9+
+- [Docker](https://www.docker.com/) (para o banco de dados)
 
-To learn more about Next.js, take a look at the following resources:
+## Instalação e execução
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**1. Instale as dependências**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm install
+```
 
-## Deploy on Vercel
+**2. Configure as variáveis de ambiente**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+cp .env.example .env
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+O arquivo `.env` deve conter:
+
+```env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/rocketseat_prompt_manager"
+```
+
+**3. Suba o banco de dados**
+
+```bash
+docker compose up -d
+```
+
+**4. Execute as migrações**
+
+```bash
+pnpm prisma migrate dev
+```
+
+**5. Inicie o servidor de desenvolvimento**
+
+```bash
+pnpm dev
+```
+
+Acesse [http://localhost:3000](http://localhost:3000) no navegador.
+
+## Scripts
+
+| Comando | Descrição |
+|---|---|
+| `pnpm dev` | Inicia o servidor de desenvolvimento |
+| `pnpm build` | Gera o build de produção |
+| `pnpm start` | Inicia o servidor em produção |
+| `pnpm test` | Executa os testes |
+| `pnpm test:watch` | Executa os testes em modo watch |
+| `pnpm test:coverage` | Executa os testes com cobertura |
+| `pnpm lint` | Verifica problemas de lint |
+| `pnpm format` | Formata os arquivos com Prettier |
+| `pnpm typecheck` | Verifica os tipos TypeScript |
+
+## Git hooks (Lefthook)
+
+- **pre-commit** — formata os arquivos staged com Prettier
+- **pre-push** — executa typecheck, lint e testes com cobertura
